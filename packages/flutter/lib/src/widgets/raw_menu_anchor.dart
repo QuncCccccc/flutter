@@ -515,6 +515,9 @@ class _RawMenuAnchorState extends State<RawMenuAnchor> with _RawMenuAnchorBaseMi
     }
 
     assert(_debugMenuInfo('Opening $this at ${position ?? Offset.zero}'));
+    // SchedulerBinding.instance.addPostFrameCallback((Duration timestamp) {
+    //   debugDumpSemanticsTree(DebugSemanticsDumpOrder.inverseHitTest);
+    // });
 
     // Close all siblings.
     _parent?.closeChildren();
