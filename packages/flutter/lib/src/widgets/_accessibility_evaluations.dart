@@ -288,8 +288,9 @@ class MinimumTextContrastEvaluation extends AccessibilityEvaluation {
       final double ratio = 1 / renderView.flutterView.devicePixelRatio;
       image = await layer.toImage(renderView.paintBounds, pixelRatio: ratio);
       final ByteData? byteData = await image.toByteData();
-
-      violations.addAll(await _evaluateNode(root, image, byteData!, renderView));
+      if (byteData != null) {
+        violations.addAll(await _evaluateNode(root, image, byteData, renderView));
+      }
       image.dispose();
     }
 
@@ -512,7 +513,7 @@ class MinimumTextContrastEvaluationAAA extends MinimumTextContrastEvaluation {
 /// An evaluation which verifies that all nodes that represent non-text controls
 /// meet minimum contrast levels of 3.0.
 ///
-/// The evaluatiosn are defined by the Web Content Accessibility Guidelines,
+/// The evaluations are defined by the Web Content Accessibility Guidelines,
 /// https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html
 @internal
 class MinimumNonTextContrastEvaluation extends AccessibilityEvaluation {
@@ -537,8 +538,9 @@ class MinimumNonTextContrastEvaluation extends AccessibilityEvaluation {
       final double ratio = 1 / renderView.flutterView.devicePixelRatio;
       final ui.Image image = await layer.toImage(renderView.paintBounds, pixelRatio: ratio);
       final ByteData? byteData = await image.toByteData();
-
-      violations.addAll(await _evaluateNode(root, image, byteData!, renderView));
+      if (byteData != null) {
+        violations.addAll(await _evaluateNode(root, image, byteData, renderView));
+      }
       image.dispose();
     }
 
@@ -575,7 +577,6 @@ class MinimumNonTextContrastEvaluation extends AccessibilityEvaluation {
     if (_shouldSkipNode(data)) {
       return violations;
     }
-
     Rect nodeBounds = node.rect;
     SemanticsNode? current = node;
     while (current != null) {
