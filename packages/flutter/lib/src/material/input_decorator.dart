@@ -759,13 +759,13 @@ class _RenderDecoration extends RenderBox
     final RenderBox? helperError = childForSlot(_DecorationSlot.helperError);
     return <RenderBox>[
       ?icon,
-      ?hint,
       ?input,
       ?prefixIcon,
       ?suffixIcon,
       ?prefix,
       ?suffix,
       ?label,
+      ?hint,
       ?helperError,
       ?counter,
       ?container,
