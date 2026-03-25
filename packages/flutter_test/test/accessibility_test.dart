@@ -248,6 +248,28 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('Material text field - hint text contrast', (WidgetTester tester) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _boilerplate(
+          Container(
+            width: 200.0,
+            color: Colors.white,
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Type something here...',
+                hintStyle: TextStyle(color: Colors.black.withAlpha(32)),
+                border: const OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.text,
+            ),
+          ),
+        ),
+      );
+      await expectLater(tester, doesNotMeetGuideline(textContrastGuideline));
+      handle.dispose();
+    });
+
     testWidgets('Material2: yellow text on yellow background fails with correct message', (
       WidgetTester tester,
     ) async {
