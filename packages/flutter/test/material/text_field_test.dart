@@ -5653,7 +5653,12 @@ void main() {
           children: <TestSemantics>[
             TestSemantics(
               children: <TestSemantics>[
-                TestSemantics(id: 2, textDirection: TextDirection.ltr, label: 'Prefix'),
+                TestSemantics(
+                  id: 2,
+                  textDirection: TextDirection.ltr,
+                  flags: <SemanticsFlag>[SemanticsFlag.hasEnabledState, SemanticsFlag.isEnabled],
+                  label: 'Prefix',
+                ),
                 TestSemantics(
                   textDirection: TextDirection.ltr,
                   value: 'some text',
@@ -5667,7 +5672,12 @@ void main() {
                     SemanticsFlag.isEnabled,
                   ],
                 ),
-                TestSemantics(id: 3, textDirection: TextDirection.ltr, label: 'Suffix'),
+                TestSemantics(
+                  id: 3,
+                  textDirection: TextDirection.ltr,
+                  flags: <SemanticsFlag>[SemanticsFlag.hasEnabledState, SemanticsFlag.isEnabled],
+                  label: 'Suffix',
+                ),
               ],
             ),
           ],
