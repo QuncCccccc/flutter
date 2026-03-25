@@ -367,7 +367,7 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
       return result;
     }
     final String text = data.label.isEmpty ? data.value : data.label;
-    final Iterable<Element> elements = find.text(text).evaluate();
+    final Iterable<Element> elements = find.text(text).hitTestable().evaluate();
     for (final element in elements) {
       result += await _evaluateElement(node, element, tester, image, byteData, renderView);
     }
