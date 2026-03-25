@@ -335,6 +335,41 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
     return result;
   }
 
+  /// Determines if the given [element] is currently visible on screen and
+  /// not occluded by other unrelated UI layers.
+  ///
+  /// This performs a hit test at the center of the element and iterates
+  /// through the hit path. It returns true if the hit path includes the
+  /// element itself, or if it includes any render object that belongs to
+  /// the same semantic boundary (indicated by having the same
+  /// [debugSemantics] node). This robustly handles composite widgets like
+  /// `TextField` hints, which evaluate functionally as part of the text
+  /// field but delegate hits to their siblings, while concurrently
+  /// rejecting elements covered by separate overlapping layers.
+  bool _isElementVisible(Element element, SemanticsNode node) {
+    final RenderObject? object = element.renderObject;
+    if (object is! RenderBox) {
+      return false;
+    }
+    final int viewId = element.findAncestorWidgetOfExactType<View>()!.view.viewId;
+    final Offset absoluteOffset = object.localToGlobal(object.size.center(Offset.zero));
+    final hitResult = HitTestResult();
+    WidgetsBinding.instance.hitTestInView(hitResult, absoluteOffset, viewId);
+
+    for (final HitTestEntry entry in hitResult.path) {
+      if (entry.target is RenderObject) {
+        RenderObject? current = entry.target as RenderObject;
+        while (current != null) {
+          if (current == object || current.debugSemantics == node) {
+            return true;
+          }
+          current = current.parent;
+        }
+      }
+    }
+    return false;
+  }
+
   Future<Evaluation> _evaluateNode(
     SemanticsNode node,
     WidgetTester tester,
@@ -369,7 +404,9 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
     final String text = data.label.isEmpty ? data.value : data.label;
     final Iterable<Element> elements = find.text(text).evaluate();
     for (final element in elements) {
-      result += await _evaluateElement(node, element, tester, image, byteData, renderView);
+      if (_isElementVisible(element, node)) {
+        result += await _evaluateElement(node, element, tester, image, byteData, renderView);
+      }
     }
     return result;
   }
