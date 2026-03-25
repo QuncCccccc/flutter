@@ -355,6 +355,10 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
     }
 
     final SemanticsData data = node.getSemanticsData();
+    if (shouldSkipDisabledNode(data)) {
+      return result;
+    }
+
     final children = <SemanticsNode>[];
     node.visitChildren((SemanticsNode child) {
       children.add(child);
@@ -474,6 +478,9 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
       'https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html',
     );
   }
+
+  bool shouldSkipDisabledNode(SemanticsData data) =>
+      data.flagsCollection.isEnabled == ui.Tristate.isFalse;
 
   /// Returns whether node should be skipped.
   ///

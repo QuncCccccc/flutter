@@ -726,14 +726,26 @@ class _RenderDecoration extends RenderBox
     required bool isFocused,
     required bool expands,
     required bool material3,
+    required bool enabled,
     TextAlignVertical? textAlignVertical,
   }) : _decoration = decoration,
        _textDirection = textDirection,
        _textBaseline = textBaseline,
        _textAlignVertical = textAlignVertical,
        _isFocused = isFocused,
+       _enabled = enabled,
        _expands = expands,
        _material3 = material3;
+
+  bool get enabled => _enabled;
+  bool _enabled;
+  set enabled(bool value) {
+    if (_enabled == value) {
+      return;
+    }
+    _enabled = value;
+    markNeedsSemanticsUpdate();
+  }
 
   // TODO(bleroux): consider defining this value as a Material token and making it
   // configurable by InputDecorationThemeData.
@@ -1734,11 +1746,15 @@ class _RenderDecoration extends RenderBox
   @override
   void describeSemanticsConfiguration(SemanticsConfiguration config) {
     config.childConfigurationsDelegate = _childSemanticsConfigurationDelegate;
+    if (!_enabled) {
+      config.isEnabled = false;
+    }
   }
 }
 
 class _Decorator extends SlottedMultiChildRenderObjectWidget<_DecorationSlot, RenderBox> {
   const _Decorator({
+    required this.enabled,
     required this.textAlignVertical,
     required this.decoration,
     required this.textDirection,
@@ -1747,6 +1763,7 @@ class _Decorator extends SlottedMultiChildRenderObjectWidget<_DecorationSlot, Re
     required this.expands,
   });
 
+  final bool enabled;
   final _Decoration decoration;
   final TextDirection textDirection;
   final TextBaseline textBaseline;
@@ -1784,6 +1801,7 @@ class _Decorator extends SlottedMultiChildRenderObjectWidget<_DecorationSlot, Re
       isFocused: isFocused,
       expands: expands,
       material3: Theme.of(context).useMaterial3,
+      enabled: enabled,
     );
   }
 
@@ -1795,7 +1813,8 @@ class _Decorator extends SlottedMultiChildRenderObjectWidget<_DecorationSlot, Re
       ..isFocused = isFocused
       ..textAlignVertical = textAlignVertical
       ..textBaseline = textBaseline
-      ..textDirection = textDirection;
+      ..textDirection = textDirection
+      ..enabled = enabled;
   }
 }
 
@@ -2644,6 +2663,7 @@ class _InputDecoratorState extends State<InputDecorator> with TickerProviderStat
     }
 
     final decorator = _Decorator(
+      enabled: decoration.enabled,
       decoration: _Decoration(
         contentPadding: contentPadding,
         isCollapsed: decoration.isCollapsed!,
