@@ -338,14 +338,14 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
   /// Determines if the given [element] is currently visible on screen and
   /// not occluded by other unrelated UI layers.
   ///
-  /// This performs a hit test at the center of the element and iterates
-  /// through the hit path. It returns true if the hit path includes the
-  /// element itself, or if it includes any render object that belongs to
-  /// the same semantic boundary (indicated by having the same
-  /// [debugSemantics] node). This robustly handles composite widgets like
-  /// `TextField` hints, which evaluate functionally as part of the text
-  /// field but delegate hits to their siblings, while concurrently
-  /// rejecting elements covered by separate overlapping layers.
+  /// This method is similar to [Finder.hitTestable], as it performs a hit test
+  /// at the center of the element. However, instead of strictly requiring the
+  /// element's render object to be an ancestor of the hit target (which fails
+  /// for siblings like `TextField` hints that delegate hits to other parts of
+  /// the same component), it returns true if any render object in the hit
+  /// path shares the same [debugSemantics] node. This allows testing
+  /// non-interactive visual parts of interactive widgets while successfully
+  /// rejecting elements truly occluded by completely separate overlapping layers.
   bool _isElementVisible(Element element, SemanticsNode node) {
     final RenderObject? object = element.renderObject;
     if (object is! RenderBox) {
