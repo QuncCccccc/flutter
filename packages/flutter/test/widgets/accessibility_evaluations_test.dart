@@ -642,7 +642,9 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('passes if title widget is deeply nested (recursive check)', (WidgetTester tester) async {
+    testWidgets('passes if title widget is deeply nested (recursive check)', (
+      WidgetTester tester,
+    ) async {
       final SemanticsHandle handle = tester.ensureSemantics();
       await tester.pumpWidget(
         TestWidgetsApp(
@@ -650,7 +652,11 @@ void main() {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Center(
-                child: Title(title: 'Nested Title', color: const Color(0xFF000000), child: const SizedBox()),
+                child: Title(
+                  title: 'Nested Title',
+                  color: const Color(0xFF000000),
+                  child: const SizedBox(),
+                ),
               ),
             ),
           ),
@@ -679,7 +685,9 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('fails if title widget is missing in deeply nested tree', (WidgetTester tester) async {
+    testWidgets('fails if title widget is missing in deeply nested tree', (
+      WidgetTester tester,
+    ) async {
       final SemanticsHandle handle = tester.ensureSemantics();
       await tester.pumpWidget(
         const Directionality(
@@ -687,9 +695,7 @@ void main() {
           child: SizedBox(
             child: Padding(
               padding: EdgeInsets.all(8.0),
-              child: Center(
-                child: Text('No title here'),
-              ),
+              child: Center(child: Text('No title here')),
             ),
           ),
         ),
