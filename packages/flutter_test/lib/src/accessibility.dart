@@ -356,16 +356,28 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
     final hitResult = HitTestResult();
     WidgetsBinding.instance.hitTestInView(hitResult, absoluteOffset, viewId);
 
+    if (hitResult.path.isEmpty) {
+      return false;
+    }
+
+    // Find the first RenderObject in the hit path to ensure we respect occlusion
+    // while properly handling non-RenderObject targets like TextSpan.
+    RenderObject? topRenderObject;
     for (final HitTestEntry entry in hitResult.path) {
       if (entry.target is RenderObject) {
-        RenderObject? current = entry.target as RenderObject;
-        while (current != null) {
-          if (current == object || current.debugSemantics == node) {
-            return true;
-          }
-          current = current.parent;
-        }
+        topRenderObject = entry.target as RenderObject;
+        break;
       }
+    }
+
+    if (topRenderObject != null) {
+       RenderObject? current = topRenderObject;
+       while (current != null) {
+         if (current == object || current.debugSemantics == node) {
+           return true;
+         }
+         current = current.parent;
+       }
     }
     return false;
   }
