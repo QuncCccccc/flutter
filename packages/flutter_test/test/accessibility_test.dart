@@ -540,7 +540,6 @@ void main() {
       handle.dispose();
     });
 
-
     testWidgets('Disabled button is excluded from text contrast guideline', (
       WidgetTester tester,
     ) async {
