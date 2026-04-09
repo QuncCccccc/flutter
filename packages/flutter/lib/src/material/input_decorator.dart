@@ -756,18 +756,22 @@ class _RenderDecoration extends RenderBox
   RenderBox? get container => childForSlot(_DecorationSlot.container);
 
   // The returned list is ordered for hit testing.
+  // Prioritize hint when not focused to make it hit-testable for accessibility
+  // guidelines.
   @override
   Iterable<RenderBox> get children {
     final RenderBox? helperError = childForSlot(_DecorationSlot.helperError);
     return <RenderBox>[
       ?icon,
-      ?input,
+      if (!isFocused) ?hint,
+      if (!isFocused) ?label,
       ?prefixIcon,
       ?suffixIcon,
       ?prefix,
       ?suffix,
-      ?label,
-      ?hint,
+      ?input,
+      if (isFocused) ?label,
+      if (isFocused) ?hint,
       ?helperError,
       ?counter,
       ?container,
@@ -1808,7 +1812,6 @@ class _AffixText extends StatelessWidget {
     this.style,
     this.child,
     this.semanticsSortKey,
-    this.semanticsEnabled,
     required this.semanticsTag,
   });
 
@@ -1817,7 +1820,6 @@ class _AffixText extends StatelessWidget {
   final TextStyle? style;
   final Widget? child;
   final SemanticsSortKey? semanticsSortKey;
-  final bool? semanticsEnabled;
   final SemanticsTag semanticsTag;
 
   @override
@@ -1833,7 +1835,6 @@ class _AffixText extends StatelessWidget {
           child: Semantics(
             sortKey: semanticsSortKey,
             tagForChildren: semanticsTag,
-            enabled: semanticsEnabled,
             child: child ?? (text == null ? null : Text(text!, style: style)),
           ),
         ),
@@ -2428,7 +2429,6 @@ class _InputDecoratorState extends State<InputDecorator> with TickerProviderStat
             style: WidgetStateProperty.resolveAs(decoration.prefixStyle, widgetState) ?? hintStyle,
             semanticsSortKey: needsSemanticsSortOrder ? _prefixSemanticsSortOrder : null,
             semanticsTag: _kPrefixSemanticsTag,
-            semanticsEnabled: decoration.enabled,
             child: decoration.prefix,
           )
         : null;
@@ -2440,7 +2440,6 @@ class _InputDecoratorState extends State<InputDecorator> with TickerProviderStat
             style: WidgetStateProperty.resolveAs(decoration.suffixStyle, widgetState) ?? hintStyle,
             semanticsSortKey: needsSemanticsSortOrder ? _suffixSemanticsSortOrder : null,
             semanticsTag: _kSuffixSemanticsTag,
-            semanticsEnabled: decoration.enabled,
             child: decoration.suffix,
           )
         : null;

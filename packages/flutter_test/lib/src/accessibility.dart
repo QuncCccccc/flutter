@@ -335,53 +335,6 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
     return result;
   }
 
-  /// Determines if the given [element] is currently visible on screen and
-  /// not occluded by other unrelated UI layers.
-  ///
-  /// This method is similar to [Finder.hitTestable], as it performs a hit test
-  /// at the center of the element. However, instead of strictly requiring the
-  /// element's render object to be an ancestor of the hit target (which fails
-  /// for siblings like `TextField` hints that delegate hits to other parts of
-  /// the same component), it returns true if any render object in the hit
-  /// path shares the same [debugSemantics] node. This allows testing
-  /// non-interactive visual parts of interactive widgets while successfully
-  /// rejecting elements truly occluded by completely separate overlapping layers.
-  bool _isElementVisible(Element element, SemanticsNode node) {
-    final RenderObject? object = element.renderObject;
-    if (object is! RenderBox) {
-      return false;
-    }
-    final int viewId = element.findAncestorWidgetOfExactType<View>()!.view.viewId;
-    final Offset absoluteOffset = object.localToGlobal(object.size.center(Offset.zero));
-    final hitResult = HitTestResult();
-    WidgetsBinding.instance.hitTestInView(hitResult, absoluteOffset, viewId);
-
-    if (hitResult.path.isEmpty) {
-      return false;
-    }
-
-    // Find the first RenderObject in the hit path to ensure we respect occlusion
-    // while properly handling non-RenderObject targets like TextSpan.
-    RenderObject? topRenderObject;
-    for (final HitTestEntry entry in hitResult.path) {
-      if (entry.target is RenderObject) {
-        topRenderObject = entry.target as RenderObject;
-        break;
-      }
-    }
-
-    if (topRenderObject != null) {
-       RenderObject? current = topRenderObject;
-       while (current != null) {
-         if (current == object || current.debugSemantics == node) {
-           return true;
-         }
-         current = current.parent;
-       }
-    }
-    return false;
-  }
-
   Future<Evaluation> _evaluateNode(
     SemanticsNode node,
     WidgetTester tester,
@@ -414,11 +367,9 @@ class MinimumTextContrastGuideline extends AccessibilityGuideline {
       return result;
     }
     final String text = data.label.isEmpty ? data.value : data.label;
-    final Iterable<Element> elements = find.text(text).evaluate();
+    final Iterable<Element> elements = find.text(text).hitTestable().evaluate();
     for (final element in elements) {
-      if (_isElementVisible(element, node)) {
-        result += await _evaluateElement(node, element, tester, image, byteData, renderView);
-      }
+      result += await _evaluateElement(node, element, tester, image, byteData, renderView);
     }
     return result;
   }

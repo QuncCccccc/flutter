@@ -248,7 +248,9 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('Material text field - hint text contrast', (WidgetTester tester) async {
+    testWidgets('TextField hint text with insufficient contrast fails', (
+      WidgetTester tester,
+    ) async {
       final SemanticsHandle handle = tester.ensureSemantics();
       await tester.pumpWidget(
         _boilerplate(
@@ -267,6 +269,91 @@ void main() {
         ),
       );
       await expectLater(tester, doesNotMeetGuideline(textContrastGuideline));
+      handle.dispose();
+    });
+
+    testWidgets('TextField hint text with sufficient contrast passes', (WidgetTester tester) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _boilerplate(
+          const SizedBox(
+            width: 200.0,
+            child: TextField(decoration: InputDecoration(hintText: 'Enter text')),
+          ),
+        ),
+      );
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      handle.dispose();
+    });
+
+    testWidgets('TextField label text with insufficient contrast fails', (
+      WidgetTester tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _boilerplate(
+          SizedBox(
+            width: 200.0,
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'Email',
+                labelStyle: TextStyle(color: Colors.white.withAlpha(32)),
+              ),
+            ),
+          ),
+        ),
+      );
+      await expectLater(tester, doesNotMeetGuideline(textContrastGuideline));
+      handle.dispose();
+    });
+
+    testWidgets('Disabled TextField hint text is excluded from contrast check', (
+      WidgetTester tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _boilerplate(
+          SizedBox(
+            width: 200.0,
+            child: TextField(
+              enabled: false,
+              decoration: InputDecoration(
+                hintText: 'Enter text',
+                hintStyle: TextStyle(color: Colors.white.withAlpha(32)),
+              ),
+            ),
+          ),
+        ),
+      );
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      handle.dispose();
+    });
+
+    testWidgets('Text occluded by another widget is excluded from contrast check', (
+      WidgetTester tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _boilerplate(
+          SizedBox(
+            width: 200.0,
+            height: 200.0,
+            child: Stack(
+              children: <Widget>[
+                // Text behind an opaque container — visually occluded.
+                const Positioned.fill(
+                  child: Text(
+                    'hidden text',
+                    style: TextStyle(fontSize: 14.0, color: Colors.yellowAccent),
+                  ),
+                ),
+                Positioned.fill(child: Container(color: Colors.white)),
+              ],
+            ),
+          ),
+        ),
+      );
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
       handle.dispose();
     });
 
@@ -452,6 +539,7 @@ void main() {
       expect(result.passed, true);
       handle.dispose();
     });
+
 
     testWidgets('Disabled button is excluded from text contrast guideline', (
       WidgetTester tester,
