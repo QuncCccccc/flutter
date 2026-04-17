@@ -1,0 +1,14 @@
+name: material_gen_defaults
+description: Isolated internal defaults generator for decoupled material package.
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  test: any
