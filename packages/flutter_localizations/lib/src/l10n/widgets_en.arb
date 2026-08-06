@@ -20,7 +20,7 @@
   "cutButtonLabel": "Cut",
   "@cutButtonLabel": {"description":"The label for cut buttons and menu items."},
   "lookUpButtonLabel": "Look Up",
-  "@lookUpButtonLabel": {"description":"The label for the Look Up button and menu items."},
+  "@lookUpButtonLabel": {"description":"The label for the Look Up button and menu items, used to search for or consult definitions of selected text in a dictionary or reference guide."},
   "searchWebButtonLabel": "Search Web",
   "@searchWebButtonLabel": {"description":"The label for the Search Web button and menu items."},
   "shareButtonLabel": "Share",
